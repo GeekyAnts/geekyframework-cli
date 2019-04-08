@@ -1,0 +1,17 @@
+{
+  "name": "geekyframework-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "execa": "^1.0.0",
+    "listr": "^0.14.3",
+    "minimist": "^1.2.0",
+    "vorpal": "^1.12.0"
+  }
+}
