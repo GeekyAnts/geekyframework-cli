@@ -29,7 +29,6 @@ var CLI_MODULE_PATH = function() {
     process.cwd(),
     "node_modules",
     "geekyframework",
-    "dist",
     "cli.js"
   );
 };
@@ -72,7 +71,8 @@ if (fs.existsSync(cliPath)) {
 
 var commands = options._;
 if (cli) {
-  cli.default.run(options);
+  console.log(cli);
+  cli.run(options);
 } else {
   if (options._.length === 0 && (options.h || options.help)) {
     console.log(
@@ -83,7 +83,7 @@ if (cli) {
         "",
         "  Commands:",
         "",
-        "    init <ProjectName> [ProjectType] generates a new project and installs its dependencies",
+        "    init injects the framework in your project and installs its dependencies",
         "",
         "  Options:",
         "",
@@ -104,12 +104,12 @@ if (cli) {
 
   switch (commands[0]) {
     case "init":
-      if (!commands[1]) {
-        console.error("Usage: geek init <ProjectName> [ProjectType]");
-        process.exit(1);
-      } else {
-        init(commands[1], options);
-      }
+      // if (!commands[1]) {
+      //   console.error("Usage: geek init <ProjectName> [ProjectType]");
+      //   process.exit(1);
+      // } else {
+      init(options);
+      // }
       break;
     default:
       console.error(
@@ -149,12 +149,12 @@ function validateProjectName(name) {
  * @param options.npm If true, always use the npm command line client,
  *                       don't use yarn even if available.
  */
-function init(name, options) {
-  if (fs.existsSync(name)) {
-    createAfterConfirmation(name, options);
-  } else {
-    createProject(name, options);
-  }
+function init(options) {
+  // if (fs.existsSync("name")) {
+  //   createAfterConfirmation(options);
+  // } else {
+  injectGeekyFramework(options);
+  // }
 }
 
 function createAfterConfirmation(name, options) {
@@ -170,7 +170,7 @@ function createAfterConfirmation(name, options) {
 
   prompt.get(property, function(err, result) {
     if (result.yesno[0] === "y") {
-      createProject(name, options);
+      injectGeekyFramework(name, options);
     } else {
       console.log("Project initialization cancelled");
       process.exit();
@@ -178,28 +178,13 @@ function createAfterConfirmation(name, options) {
   });
 }
 
-function createProject(name, options) {
-  var root = path.resolve(name);
+function injectGeekyFramework(options) {
+  var root = path.resolve(".");
   var projectName = path.basename(root);
 
-  console.log(
-    "This will walk you through creating a new Geekyframework project"
-  );
-
-  if (!fs.existsSync(root)) {
-    fs.mkdirSync(root);
-  }
-
-  var packageJson = {
-    name: projectName,
-    version: "0.0.1",
-    private: true
-  };
-  fs.writeFileSync(
-    path.join(root, "package.json"),
-    JSON.stringify(packageJson)
-  );
-  process.chdir(root);
+  // console.log(
+  //   "This will walk you through adding Geekyframework to your project"
+  // );
 
   run(root, projectName, options);
 }
@@ -255,10 +240,11 @@ function run(root, projectName, options) {
       console.error("Command `" + installCommand + "` failed.");
       process.exit(1);
     }
+    console.log(stdout);
     spinner.succeed("Installed " + getInstallPackage(geekyframeworkPackage));
     checkNodeVersion();
     cli = require(CLI_MODULE_PATH());
-    cli.default.init(root, projectName, options._[2]);
+    cli.init(root, projectName, options._[2]);
   });
 }
 
